@@ -1,1 +1,0 @@
-### Тест Apache Kafka c SSL сертификатами

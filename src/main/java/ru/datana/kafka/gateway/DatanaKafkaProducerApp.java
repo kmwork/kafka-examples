@@ -1,41 +1,26 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package kafka.examples.producer;
+package ru.datana.kafka.gateway.producer;
 
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Serializable;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Properties;
 
 import static net.sourceforge.argparse4j.impl.Arguments.store;
 
-public class BasicProducerExample {
-private final static String APP_CONFIG_FILE_NAME = "datana-ssl-user-config.properties";
+public class DatanaKafkaProducerApp {
+    private final static String APP_CONFIG_FILE_NAME = "datana-kafka-client-config.properties";
+
     public static void main(String[] args) {
         ArgumentParser parser = argParser();
 
@@ -52,7 +37,7 @@ private final static String APP_CONFIG_FILE_NAME = "datana-ssl-user-config.prope
 
             File fileConf = new File(appDir, APP_CONFIG_FILE_NAME);
             Properties producerConfig = new Properties();
-            try (FileReader fileReader = new FileReader(fileConf, Charset.forName("UTF-8"))) {
+            try (FileReader fileReader = new FileReader(fileConf, StandardCharsets.UTF_8)) {
                 producerConfig.load(fileReader);
                 producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
                 producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
@@ -60,19 +45,20 @@ private final static String APP_CONFIG_FILE_NAME = "datana-ssl-user-config.prope
 
             String topic = producerConfig.getProperty("topic");
 
+            try (Producer<String, String> producer = new KafkaProducer<>(producerConfig)) {
+                producer.initTransactions(); //initiate transactions
+                producer.beginTransaction(); //begin transactions
+                for (int i = 0; i < noOfMessages; i++) {
+                    producer.send(new ProducerRecord<String, String>(topic, Integer.toString(i), Long.toString(System.nanoTime())));
 
-            SimpleProducer<byte[], byte[]> producer = new SimpleProducer<>(producerConfig, syncSend);
-
-            for (int i = 0; i < noOfMessages; i++) {
-                producer.send(topic, getKey(i), getEvent(messageType, i));
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException e) {
+                    }
                 }
+                producer.commitTransaction(); //commit
             }
 
-            producer.close();
         } catch (ArgumentParserException | IOException e) {
             if (args.length == 0) {
                 parser.printHelp();
@@ -83,22 +69,6 @@ private final static String APP_CONFIG_FILE_NAME = "datana-ssl-user-config.prope
             }
         }
 
-    }
-
-    private static byte[] getEvent(String messageType, int i) {
-        if ("string".equalsIgnoreCase(messageType))
-            return serialize("message" + i);
-        else
-            return serialize(new MyEvent(i, "event" + i, "test", System.currentTimeMillis()));
-    }
-
-
-    private static byte[] getKey(int i) {
-        return serialize(Integer.valueOf(i));
-    }
-
-    public static byte[] serialize(final Object obj) {
-        return org.apache.commons.lang3.SerializationUtils.serialize((Serializable) obj);
     }
 
     /**

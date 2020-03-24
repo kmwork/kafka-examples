@@ -4,23 +4,34 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>kafka-examples</groupId>
-    <artifactId>producer</artifactId>
+    <groupId>datana-kafka-try</groupId>
+    <artifactId>demo-K8</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>alfa-1</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.5.RELEASE</version>
+        <relativePath/>
+    </parent>
 
     <properties>
-        <kafka.version>0.11.0.0</kafka.version>
-        <kafka.scala.version>2.11</kafka.scala.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>13</java.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -29,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
-	    <artifactId>log4j</artifactId>
+            <artifactId>log4j</artifactId>
 	    <version>1.2.17</version>
             <scope>runtime</scope>
         </dependency>
@@ -44,11 +55,6 @@
 	    <version>3.0.3</version>
         </dependency>
         <dependency>
-            <groupId>de.javakaffee</groupId>
-            <artifactId>kryo-serializers</artifactId>
-            <version>0.37</version>
-        </dependency>
-        <dependency>
 	    <groupId>org.apache.commons</groupId>
 	    <artifactId>commons-lang3</artifactId>
 	    <version>3.0</version>
@@ -57,16 +63,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <inherited>true</inherited>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -92,7 +88,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <finalName>kafka-examples-${project.artifactId}-${project.version}</finalName>
+                    <finalName>datana-kafka-${project.artifactId}-${project.version}</finalName>
                 </configuration>
             </plugin>
         </plugins>

@@ -4,12 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
 import ru.datana.kafka.gateway.config.AppConts;
+import ru.datana.kafka.gateway.config.DatanaSpringConfig;
 
 import java.util.Arrays;
 
 @Slf4j
 @SpringBootApplication
+@Import(DatanaSpringConfig.class)
 public class DatanaKafkaConsumerApp {
     public static void main(String[] args) {
         log.info(AppConts.APP_LOG_PREFIX + "================ Запуск  ================. Аргументы = " + Arrays.toString(args));

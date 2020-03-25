@@ -1,4 +1,4 @@
-package ru.datana.kafka.gateway;
+package ru.datana.kafka.gateway.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatanaKafkaListener {
 
-    @KafkaListener(topics = "datana_topic_kafka", errorHandler = "customErrorHandler")
+    @KafkaListener(topics = "datana_topic_kafka", errorHandler = "datanaKafkaErrorHandler")
     public void execute(final GenericMessage<String> message) {
         log.info(
                 "Reading offset: {} and message received: {}",

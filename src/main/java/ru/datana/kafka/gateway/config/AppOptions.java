@@ -21,10 +21,6 @@ public class AppOptions {
     private String kafkaTopic;
 
     @Getter
-    private String kafkaBrokerUrl;
-
-
-    @Getter
     private String appVersion;
     @Getter
     private Properties properties;
@@ -34,7 +30,6 @@ public class AppOptions {
         properties = LanitFileUtils.readDataConfig();
         appVersion = ValueParser.readPropAsText(properties, "app.version");
         kafkaTopic = ValueParser.readPropAsText(properties, "kafka.topic");
-        kafkaBrokerUrl = ValueParser.readPropAsText(properties, "kafka.brokerUrl");
 
         log.info("[Настройки] Параметры = " + toString());
 

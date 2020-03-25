@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package ru.datana.kafka.gateway.consumer;
+package ru.datana.kafka.gateway.config;
 
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;

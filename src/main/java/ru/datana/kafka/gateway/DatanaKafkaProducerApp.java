@@ -1,55 +1,36 @@
 package ru.datana.kafka.gateway.producer;
 
+import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
-import net.sourceforge.argparse4j.inf.ArgumentParserException;
-import net.sourceforge.argparse4j.inf.Namespace;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import ru.datana.kafka.gateway.config.AppConts;
+import ru.datana.kafka.gateway.config.AppOptions;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Properties;
 
 import static net.sourceforge.argparse4j.impl.Arguments.store;
 
+@Slf4j
 public class DatanaKafkaProducerApp {
     private final static String APP_CONFIG_FILE_NAME = "datana-kafka-client-config.properties";
+    private static long delay = 0;
+    private static int noOfMessages = 10;
 
     public static void main(String[] args) {
-        ArgumentParser parser = argParser();
 
+        log.info(AppConts.APP_LOG_PREFIX + "================ Запуск  ================. Аргументы = " + Arrays.toString(args));
+        AppOptions appOptions = new AppOptions();
         try {
-            Namespace res = parser.parseArgs(args);
 
-            /* parse args */
-            String appDir = res.getString("app.dir");
-            Boolean syncSend = res.getBoolean("syncsend");
-            long noOfMessages = res.getLong("messages");
-            long delay = res.getLong("delay");
-            String messageType = res.getString("messagetype");
-
-
-            File fileConf = new File(appDir, APP_CONFIG_FILE_NAME);
-            Properties producerConfig = new Properties();
-            try (FileReader fileReader = new FileReader(fileConf, StandardCharsets.UTF_8)) {
-                producerConfig.load(fileReader);
-                producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
-                producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
-            }
-
-            String topic = producerConfig.getProperty("topic");
-
-            try (Producer<String, String> producer = new KafkaProducer<>(producerConfig)) {
+            appOptions.load();
+            try (Producer<String, String> producer = new KafkaProducer<>(appOptions.getProperties())) {
                 producer.initTransactions(); //initiate transactions
                 producer.beginTransaction(); //begin transactions
                 for (int i = 0; i < noOfMessages; i++) {
-                    producer.send(new ProducerRecord<String, String>(topic, Integer.toString(i), Long.toString(System.nanoTime())));
+                    producer.send(new ProducerRecord<String, String>(appOptions.getKafkaTopic(), Integer.toString(i), Long.toString(System.nanoTime())));
 
                     try {
                         Thread.sleep(delay);
@@ -59,16 +40,10 @@ public class DatanaKafkaProducerApp {
                 producer.commitTransaction(); //commit
             }
 
-        } catch (ArgumentParserException | IOException e) {
-            if (args.length == 0) {
-                parser.printHelp();
-                System.exit(0);
-            } if (e instanceof ArgumentParserException){
-                parser.handleError((ArgumentParserException)e);
-                System.exit(1);
-            }
+        } catch (Exception ex) {
+            log.error(AppConts.ERROR_LOG_PREFIX + " Ошибка в программе", ex);
         }
-
+        log.info(AppConts.APP_LOG_PREFIX + "********* Завершение программы *********");
     }
 
     /**

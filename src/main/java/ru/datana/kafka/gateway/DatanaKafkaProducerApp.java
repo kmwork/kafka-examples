@@ -1,4 +1,4 @@
-package ru.datana.kafka.gateway.producer;
+package ru.datana.kafka.gateway;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -31,9 +31,9 @@ public class DatanaKafkaProducerApp {
                 //producer.initTransactions(); //initiate transactions
                 //producer.beginTransaction(); //begin transactions
                 for (int i = 0; i < noOfMessages; i++) {
-                    String messageId = "kostya_id_" + System.nanoTime();
+                    String messageId = "kostya_id_" + System.nanoTime() + "_index: " + i;
                     String messageText = "****KostyaHello****, class =" + DatanaKafkaProducerApp.class.getSimpleName() + ", index = " + i + ", nanoTime =" + System.nanoTime();
-                    producer.send(new ProducerRecord<String, String>(appOptions.getKafkaTopic(), messageId, messageText);
+                    producer.send(new ProducerRecord<String, String>(appOptions.getKafkaTopic(), messageId, messageText));
 
                     try {
                         Thread.sleep(delay);

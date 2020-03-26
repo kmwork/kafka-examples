@@ -27,6 +27,7 @@ public class SimpleConsumer {
     private CountDownLatch shutdownlatch = new CountDownLatch(1);
     private Collection<TopicPartition> partitions = new ArrayList<>(1);
     private long sleepMS = 0;
+    private int totalCount;
 
     public SimpleConsumer() throws AppException {
         AppOptions appOptions = new AppOptions();
@@ -40,14 +41,15 @@ public class SimpleConsumer {
 
     public void run() {
 
+        long startTimeNano = System.nanoTime();
         try {
             log.info("Starting the Consumer : {}", clientId);
             consumer.assign(partitions);
             // consumer.seek(partition, offset); // User has to load the initial offset
 
             log.info("C : {}, Started to process records for partitions : {}", clientId, partitions);
-
-            while (!closed.get()) {
+            totalCount = 0;
+            while (!closed.get() && totalCount < DatanaKafkaProducerApp.noOfMessages) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(20));
 
                 if (records.isEmpty()) {
@@ -56,13 +58,14 @@ public class SimpleConsumer {
                 }
 
                 log.info("C : {} Total No. of records received : {}", clientId, records.count());
+                totalCount += records.count();
                 for (ConsumerRecord<String, String> record : records) {
                     log.info("C : {}, Record received topic : {}, partition : {}, key : {}, value : {}, offset : {}",
                             clientId, record.topic(), record.partition(), record.key(), record.value(),
                             record.offset());
                     Thread.sleep(sleepMS);
                 }
-                // User has to take care of committing the offsets
+
             }
         } catch (Exception e) {
             log.error("Error while consuming messages", e);
@@ -71,6 +74,9 @@ public class SimpleConsumer {
             shutdownlatch.countDown();
             log.info("C : {}, consumer exited", clientId);
         }
+        long endTimeNano = System.nanoTime();
+        long delta = endTimeNano - startTimeNano;
+        log.debug("time consumer = " + Duration.ofNanos(delta).getSeconds() + " seconds for N = " + totalCount);
     }
 
     public void close() {

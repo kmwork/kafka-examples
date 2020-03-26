@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import ru.datana.kafka.gateway.config.AppConts;
 import ru.datana.kafka.gateway.config.AppOptions;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -17,13 +18,14 @@ import java.util.concurrent.Future;
 @Slf4j
 public class DatanaKafkaProducerApp {
     private final static String APP_CONFIG_FILE_NAME = "datana-kafka-client-config.properties";
-    private static long delay = 10 * 1000;
-    private static int noOfMessages = 100;
+    private static long delay = 0;
+    public static int noOfMessages = 1000;
 
     public static void main(String[] args) {
 
         log.info(AppConts.APP_LOG_PREFIX + "================ Запуск  ================. Аргументы = " + Arrays.toString(args));
         AppOptions appOptions = new AppOptions();
+        long startTimeNano = System.nanoTime();
         try {
 
             appOptions.load();
@@ -45,7 +47,9 @@ public class DatanaKafkaProducerApp {
                 }
                 //producer.commitTransaction(); //commit
             }
-
+            long endTimeNano = System.nanoTime();
+            long delta = endTimeNano - startTimeNano;
+            log.debug("time producer = " + Duration.ofNanos(delta).getSeconds() + " seconds for N = " + noOfMessages);
         } catch (Exception ex) {
             log.error(AppConts.ERROR_LOG_PREFIX + " Ошибка в программе", ex);
         }

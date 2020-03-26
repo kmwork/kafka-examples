@@ -15,7 +15,7 @@ import java.util.Arrays;
 @Import(DatanaSpringConfig.class)
 public class DatanaKafkaConsumerApp {
     public static void main(String[] args) {
-        log.info(AppConts.APP_LOG_PREFIX + "================ Запуск  ================. Аргументы = " + Arrays.toString(args));
+        log.info(AppConts.APP_LOG_PREFIX + "================ Запуск 1111  ================. Аргументы = " + Arrays.toString(args));
 
         try {
             SpringApplication app = new SpringApplication(DatanaKafkaConsumerApp.class);

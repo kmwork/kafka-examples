@@ -1,7 +1,6 @@
 package ru.datana.kafka.gateway.config;
 
 import org.apache.kafka.clients.CommonClientConfigs;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +30,7 @@ public class DatanaSpringConfig {
         appOptions.load();
         Properties properties = appOptions.getProperties();
         properties.setProperty(CommonClientConfigs.CLIENT_ID_CONFIG, "datana-consumer");
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "group_one");
+        //properties.put(ConsumerConfig.GROUP_ID_CONFIG, "group_one");
         //config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         //config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         //config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

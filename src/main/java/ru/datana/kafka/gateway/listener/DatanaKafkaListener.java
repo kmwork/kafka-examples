@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatanaKafkaListener {
 
-    @KafkaListener(topics = "datana_topic_kafka", errorHandler = "datanaKafkaErrorHandler")
+    @KafkaListener(topics = "datana_topic_kafka", groupId = "datana-test-group", errorHandler = "datanaKafkaErrorHandler")
     public void execute(final GenericMessage<String> message) {
         log.info(
                 "Reading offset: {} and message received: {}",

@@ -2,7 +2,6 @@ package ru.datana.kafka.gateway;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -17,7 +16,6 @@ import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 @Slf4j
 public class SimpleConsumer {
 
@@ -28,13 +26,14 @@ public class SimpleConsumer {
     private AtomicBoolean closed = new AtomicBoolean();
     private CountDownLatch shutdownlatch = new CountDownLatch(1);
     private Collection<TopicPartition> partitions = new ArrayList<>(1);
+    private long sleepMS = 0;
 
     public SimpleConsumer() throws AppException {
         AppOptions appOptions = new AppOptions();
         appOptions.load();
         Properties properties = appOptions.getProperties();
 
-        this.clientId = properties.getProperty(ConsumerConfig.CLIENT_ID_CONFIG);
+        this.clientId = "datana-consumer-test";
         this.consumer = new KafkaConsumer<>(properties);
         partitions.add(new TopicPartition(appOptions.getKafkaTopic(), 0));
     }
@@ -49,7 +48,7 @@ public class SimpleConsumer {
             log.info("C : {}, Started to process records for partitions : {}", clientId, partitions);
 
             while (!closed.get()) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofHours(1));
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(20));
 
                 if (records.isEmpty()) {
                     log.info("C : {}, Found no records", clientId);
@@ -61,7 +60,7 @@ public class SimpleConsumer {
                     log.info("C : {}, Record received topic : {}, partition : {}, key : {}, value : {}, offset : {}",
                             clientId, record.topic(), record.partition(), record.key(), record.value(),
                             record.offset());
-                    Thread.sleep(50);
+                    Thread.sleep(sleepMS);
                 }
                 // User has to take care of committing the offsets
             }

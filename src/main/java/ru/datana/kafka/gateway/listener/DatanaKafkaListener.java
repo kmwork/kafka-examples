@@ -3,9 +3,10 @@ package ru.datana.kafka.gateway.listener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.support.GenericMessage;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-//public class DatanaKafkaListener implements ConsumerAwareMessageListener {
+@Component
 public class DatanaKafkaListener {
 
     @KafkaListener(topics = "datana_topic_kafka", errorHandler = "datanaKafkaErrorHandler")
@@ -16,10 +17,4 @@ public class DatanaKafkaListener {
                 message.getPayload());
         throw new RuntimeException("Ops");
     }
-
-
-//    @Override
-//    public void onMessage(ConsumerRecord consumerRecord, Consumer consumer) {
-//
-//    }
 }

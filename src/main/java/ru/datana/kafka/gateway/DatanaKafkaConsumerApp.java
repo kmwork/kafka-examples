@@ -27,23 +27,4 @@ public class DatanaKafkaConsumerApp {
         }
         log.info(AppConts.APP_LOG_PREFIX + "********* Завершение программы *********");
     }
-
-//    private static void createSystemConsumer() throws AppException {
-//
-//        AppOptions appOptions = new AppOptions();
-//        appOptions.load();
-//        String name = appOptions.getKafkaTopic();
-//        log.info("Creating kafka consumer for topic {}", name);
-//        ContainerProperties containerProps = new ContainerProperties(name);
-//
-//        Properties props = appOptions.getProperties();
-//        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString());
-//        ConsumerFactory<String, String> factory = new DefaultKafkaConsumerFactory(props);
-//
-//        ConcurrentMessageListenerContainer<String, GenericMessageListener> container =
-//                new ConcurrentMessageListenerContainer(factory, containerProps);
-//        container.setupMessageListener(new DatanaKafkaListener());
-//        container.start();
-//        log.info("Successfully created kafka consumer for topic {}", name);
-//    }
 }

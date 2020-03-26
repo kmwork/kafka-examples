@@ -9,6 +9,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.MessageListenerContainer;
+import ru.datana.kafka.gateway.listener.DatanaMmkMessageListener;
 import ru.datana.kafka.gateway.utils.AppException;
 
 import java.util.Properties;
@@ -42,6 +43,7 @@ public class DatanaSpringConfig {
         ConcurrentKafkaListenerContainerFactory<String, MessageListenerContainer> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         factory.setBatchListener(true);
+        factory.getContainerProperties().setMessageListener(new DatanaMmkMessageListener());
         return factory;
     }
 }

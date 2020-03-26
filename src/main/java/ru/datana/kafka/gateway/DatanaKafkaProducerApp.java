@@ -15,7 +15,7 @@ import java.util.Properties;
 @Slf4j
 public class DatanaKafkaProducerApp {
     private final static String APP_CONFIG_FILE_NAME = "datana-kafka-client-config.properties";
-    private static long delay = 0;
+    private static long delay = 1000;
     private static int noOfMessages = 10;
 
     public static void main(String[] args) {
@@ -28,17 +28,19 @@ public class DatanaKafkaProducerApp {
             Properties properties = appOptions.getProperties();
             properties.setProperty(CommonClientConfigs.CLIENT_ID_CONFIG, "datana-producer");
             try (Producer<String, String> producer = new KafkaProducer<>(properties)) {
-                producer.initTransactions(); //initiate transactions
-                producer.beginTransaction(); //begin transactions
+                //producer.initTransactions(); //initiate transactions
+                //producer.beginTransaction(); //begin transactions
                 for (int i = 0; i < noOfMessages; i++) {
-                    producer.send(new ProducerRecord<String, String>(appOptions.getKafkaTopic(), Integer.toString(i), Long.toString(System.nanoTime())));
+                    String messageId = "kostya_id_" + System.nanoTime();
+                    String messageText = "****KostyaHello****, class =" + DatanaKafkaProducerApp.class.getSimpleName() + ", index = " + i + ", nanoTime =" + System.nanoTime();
+                    producer.send(new ProducerRecord<String, String>(appOptions.getKafkaTopic(), messageId, messageText);
 
                     try {
                         Thread.sleep(delay);
                     } catch (InterruptedException e) {
                     }
                 }
-                producer.commitTransaction(); //commit
+                //producer.commitTransaction(); //commit
             }
 
         } catch (Exception ex) {

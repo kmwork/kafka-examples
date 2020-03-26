@@ -20,11 +20,9 @@ public class DatanaKafkaConsumerApp {
         try {
             SpringApplication app = new SpringApplication(DatanaKafkaConsumerApp.class);
             app.setBannerMode(Banner.Mode.OFF);
-            ///createSystemConsumer();
             app.run(args);
         } catch (Exception ex) {
             log.error(AppConts.ERROR_LOG_PREFIX + " Ошибка в программе", ex);
         }
-        log.info(AppConts.APP_LOG_PREFIX + "********* Завершение программы *********");
     }
 }
